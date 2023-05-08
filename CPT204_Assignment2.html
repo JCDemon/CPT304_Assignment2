@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>CPT204_Ass2</title>
+        <style>
+            /* Add style rule */
+            /* ... */
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                background-color: #f2f2f2;
+            }
+    
+            h1 {
+                text-align: center;
+            }
+    
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+    
+            label {
+                display: block;
+                margin-bottom: 10px;
+            }
+    
+            input[type="text"] {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+    
+            button {
+                padding: 10px 20px;
+                background-color: #4CAF50;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+    
+            .weather, .holiday, .selected-hotels {
+                margin-top: 20px;
+            }
+    
+            .weather {
+                font-size: 18px;
+                font-weight: bold;
+            }
+    
+            .temperature {
+                margin-top: 10px;
+            }
+    
+            .hotel-item {
+                margin-bottom: 10px;
+            }
+        </style>
+        <script>
+            // select hotels from hotelList
+            // ...
+            function showSelectedHotels() {
+                var numOptions = Math.floor(Math.random() * 5) + 3;
+    
+                var selectedHotels = [];
+                for (var i = 0; i < numOptions; i++) {
+                    var randomIndex = Math.floor(Math.random() * hotelList.length);
+                    selectedHotels.push(hotelList[randomIndex]);
+                }
+    
+                var selectedHotelsList = document.getElementById("selected-hotels");
+                selectedHotelsList.innerHTML = "<h2>Hotel List</h2>";
+                for (var j = 0; j < selectedHotels.length; j++) {
+                    var hotel = selectedHotels[j];
+                    var listItem = document.createElement("li");
+                    listItem.classList.add("hotel-item");
+                    listItem.innerText = (j + 1) + ". Hotel: " + hotel[0] + ", Rent: $" + hotel[1];
+                    selectedHotelsList.appendChild(listItem);
+                }
+            }
+        </script>
+    </head>
+<body>
+    <div>Enter a City</div>
+    <input id="City" placeholder="Enter name of City">
+    <br>
+    <button onclick="getWeatherAndData()" id="submit">Submit</button>
+    <div class="weather"></div>
+    <div class="holiday"></div>
+
+    <script>
+        function getWeatherAndData() {
+            // Get the city name entered by the user
+            var city = document.getElementById("City").value;
+            const weatherapiurl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=e5eb20914f993f76ee41d0eabe52ab75`;
+            // Send the weather API request and process the response
+            fetch(weatherapiurl)
+                .then((data) => data.json())
+                .then((weather) => generateHTML(weather))
+                .catch((error) => console.log(error));
+
+            const generateHTML = (data) => {
+                // Generate HTML for weather information
+                const weatherDiv = document.querySelector(".weather");
+                weatherDiv.innerHTML = `
+                    <div class="weather">Current Weather: ${data.weather[0].description}</div>
+                    <div class="temperature">Current Temperature: ${Math.round((data.main.temp - 273.15) * 100) / 100}</div><br>
+                `;
+
+                const holidayapiurl = `https://calendarific.com/api/v2/holidays?&api_key=64931719ef8200ea2c7013311cbf0a7717f422ab&country=${data.sys.country}&year=2021`;
+                // Send holiday API requests and process responses
+                fetch(holidayapiurl)
+                    .then((data2) => data2.json())
+                    .then((holiday) => generateHTML2(holiday))
+                    .catch((error) => console.log(error));
+            }
+
+            const generateHTML2 = (data2) => {
+                // Generate the HTML for the holiday selection list
+                const holidayDiv = document.querySelector(".holiday");
+                var html2 = `
+                    <div>Choose a Holiday from the list</div>
+                    <select name="holiday" id="holiday">
+                `;
+                data2.response.holidays.forEach(holiday => {
+                    html2 += `<option value="${holiday.date.iso}">${holiday.name}</option>`;
+                });
+                html2 += `
+                    </select>
+                    <br>
+                    <button onclick="showSelectedHotels()" id="submit">Submit</button>
+                    <ul id="selected-hotels"></ul>
+                `;
+                holidayDiv.innerHTML = html2;
+            }
+        }
+
+        var hotelList = [
+            ["Sunset Resort", 95], ["Harmony Hotel", 371], ["Ocean View Inn", 76],
+            ["Golden Palace", 212], ["Mountain Retreat", 459], ["Palm Paradise", 111],
+            ["Silver Sands", 455], ["Rose Garden", 284], ["Grand Mirage", 295],
+            ["Serenity Suites", 281], ["Azure Bay Hotel", 244], ["Majestic Manor", 425],
+            ["Tropical Breeze", 79], ["Whispering Pines", 488], ["Coral Cove", 472],
+            ["Emerald Springs", 390], ["Royal Oaks", 342], ["Crystal Waters", 185],
+            ["Seaside Retreat", 268], ["Tranquil Haven", 219], ["Riverside Lodge", 221],
+            ["Blissful Heights", 265], ["Whitewater Inn", 373], ["Enchanted Gardens", 366],
+            ["Misty Meadows", 92], ["Harbor View Hotel", 376], ["Silent Valley", 311],
+            ["Golden Sands", 363], ["Moonlight Mansion", 433], ["Ivory Tower", 489]
+        ];
+    </script>
+</body>
+</html>
